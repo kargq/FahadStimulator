@@ -34,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
     private static String speechSubscriptionKey = "818b0c8310c942f5b2a4c20e769a3e74";
     // Replace below with your own service region (e.g., "westus").
     private static String serviceRegion = "eastus2";
+    volatile private boolean running;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,9 +59,27 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+        running = true;
+        while (running) {
+            hear();
+            if(checkExit()) break;
+            speak();
+        }
     }
 
-    public void onSpeechButtonClicked(View v) {
+    private boolean checkExit() {
+        boolean flag = false;
+        String text = result.getText();
+        if(text.equals("exit")||text.equals("Exit")) flag = true;
+        return flag;
+    }
+
+    public void onSpeechButtonClicked(View view) {
+        hear();
+    }
+
+
+    public void hear() {
 
 
         hear.setText("Listening");
@@ -93,11 +112,15 @@ public class MainActivity extends AppCompatActivity {
 
             assert (false);
         }
-        hear.setText("Ready to play");
+        // hear.setText("Ready to play");
 
     }
 
     public void onSpeakButtonClicked(View view) {
+        speak();
+    }
+
+    public void speak() {
         try {
             if (recognized) {
 

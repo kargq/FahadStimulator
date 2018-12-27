@@ -1,5 +1,7 @@
 package me.kindeep.fahadstimulator;
 
+import java.util.Random;
+
 public class Fahad {
 
     public Fahad() {
@@ -97,12 +99,6 @@ public class Fahad {
     }
 
 
-    /**
-     * updates the index if not getting the desired one
-     *
-     * @param last index and word whose index needs to be updated
-     * @return updated index
-     */
     private static int updateIndex(int i, int word){
         if(i==word){
             i--;
@@ -113,12 +109,7 @@ public class Fahad {
     }
 
 
-    /**
-     * Checks if two similar letters are appearing together
-     *
-     * @param word word to check
-     * @return true or false whether appearing or not
-     */
+
     private static boolean doubleExists(String s){
         boolean result = false;
         for (int i = 0; i <s.length()-1 ; i++) {
