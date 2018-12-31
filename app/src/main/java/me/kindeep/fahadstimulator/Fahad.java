@@ -6,7 +6,7 @@ public class Fahad {
 
     public Fahad() {
 
-        System.out.println(fahadifySentence("What is phone number" ));
+        System.out.println(fahadifySentence("What is phone number"));
         //does nothing right now.
     }
 
@@ -20,7 +20,7 @@ public class Fahad {
 
         String result = "";
 
-        if(word.length()>3) {
+        if (word.length() > 3) {
             StringBuilder sb = new StringBuilder(word);
 
             Random methodselection = new Random();
@@ -35,7 +35,7 @@ public class Fahad {
 
             if (method == 1) {
                 for (int i = 0; i <= 3; i++) {
-                    indexToReplace = index.nextInt((word.length()-1));
+                    indexToReplace = index.nextInt((word.length() - 1));
                     if (select == i) {
                         if (word.charAt(indexToReplace) == 'a' | word.charAt(indexToReplace) == 'A' |
                                 word.charAt(indexToReplace) == 'e' | word.charAt(indexToReplace) == 'E' |
@@ -46,14 +46,14 @@ public class Fahad {
                         }
                         result = method1(sb, indexToReplace, word);
                         if (doubleExists(result)) {
-                            indexToReplace = updateIndex(indexToReplace, word.length()-1);
+                            indexToReplace = updateIndex(indexToReplace, word.length() - 1);
                             result = method1(sb, indexToReplace, word);
                         }
                     }
                 }
             } else if (method == 3) {
                 for (int i = 0; i <= 3; i++) {
-                    indexToReplace = index.nextInt((word.length()-1));
+                    indexToReplace = index.nextInt((word.length() - 1));
                     if (select == i) {
                         if (word.charAt(indexToReplace) == 'a' | word.charAt(indexToReplace) == 'A' |
                                 word.charAt(indexToReplace) == 'e' | word.charAt(indexToReplace) == 'E' |
@@ -64,14 +64,14 @@ public class Fahad {
                         }
                         result = method2(sb, word);
                         if (doubleExists(result)) {
-                            indexToReplace = updateIndex(indexToReplace, word.length()-1);
+                            indexToReplace = updateIndex(indexToReplace, word.length() - 1);
                             result = method2(sb, word);
                         }
                     }
                 }
             } else if (method == 2) {
                 for (int i = 0; i <= 3; i++) {
-                    indexToReplace = index.nextInt((word.length()-1));
+                    indexToReplace = index.nextInt((word.length() - 1));
                     if (select == i) {
                         if (word.charAt(indexToReplace) == 'a' | word.charAt(indexToReplace) == 'A' |
                                 word.charAt(indexToReplace) == 'e' | word.charAt(indexToReplace) == 'E' |
@@ -82,40 +82,39 @@ public class Fahad {
                         }
                         result = method3(sb, indexToReplace, word);
                         if (doubleExists(result)) {
-                            indexToReplace = updateIndex(indexToReplace, word.length()-1);
+                            indexToReplace = updateIndex(indexToReplace, word.length() - 1);
                             result = method3(sb, indexToReplace, word);
                         }
                     }
                 }
             }
 
-            if(result.equals(word)){
+            if (result.equals(word)) {
 
             }
-        }else {
+        } else {
             result = word;
         }
-           return result;
+        return result;
     }
 
 
-    private static int updateIndex(int i, int word){
-        if(i==word){
+    private static int updateIndex(int i, int word) {
+        if (i == word) {
             i--;
-        }else{
+        } else {
             i++;
         }
         return i;
     }
 
 
-
-    private static boolean doubleExists(String s){
+    private static boolean doubleExists(String s) {
         boolean result = false;
-        for (int i = 0; i <s.length()-1 ; i++) {
-           if(s.charAt(i)==s.charAt(i+1)) {
-               result = true;
-           }
+        for (int i = 0; i < s.length() - 1; i++) {
+            if (s.charAt(i) == s.charAt(i + 1)) {
+                result = true;
+            }
         }
         return result;
     }
@@ -128,11 +127,11 @@ public class Fahad {
      */
 
     private static String method1(StringBuilder sb, int index, String word) {
-          char temp = word.charAt(index);
-          char zeroIndex = word.charAt(0);
-          sb.setCharAt(0,temp);
-          sb.setCharAt(index,zeroIndex);
-          return sb.toString();
+        char temp = word.charAt(index);
+        char zeroIndex = word.charAt(0);
+        sb.setCharAt(0, temp);
+        sb.setCharAt(index, zeroIndex);
+        return sb.toString();
     }
 
     /**
@@ -144,34 +143,33 @@ public class Fahad {
     private static String method3(StringBuilder sb, int index, String word) {
         String result = "";
 
-        if(index<word.length() && index+1<word.length()-1){
-            sb.setCharAt(0,word.charAt(index));
-            sb.setCharAt(1,word.charAt(index+1));
-            sb.setCharAt(index,word.charAt(0));
-            sb.setCharAt(index+1,word.charAt(1));
+        if (index < word.length() && index + 1 < word.length() - 1) {
+            sb.setCharAt(0, word.charAt(index));
+            sb.setCharAt(1, word.charAt(index + 1));
+            sb.setCharAt(index, word.charAt(0));
+            sb.setCharAt(index + 1, word.charAt(1));
             result = sb.toString();
-        }else{
+        } else {
             index--;
-            result = method3(sb,index,word);
+            result = method3(sb, index, word);
         }
         return result;
     }
 
 
-   /**
+    /**
      * Changes the word with second method
      *
      * @param word word to convert  string builder with word to conver
      * @return fahadified word
      */
-    private static String method2(StringBuilder sb,String word) {
-        char temp = word.charAt(word.length()-1);
+    private static String method2(StringBuilder sb, String word) {
+        char temp = word.charAt(word.length() - 1);
         char zeroIndex = word.charAt(0);
-        sb.setCharAt(0,temp);
-        sb.setCharAt(word.length()-1,zeroIndex);
+        sb.setCharAt(0, temp);
+        sb.setCharAt(word.length() - 1, zeroIndex);
         return sb.toString();
     }
-
 
 
     /**
@@ -181,32 +179,32 @@ public class Fahad {
      * @return fahadified sentence
      */
     public static String fahadifySentence(String sentence) {
-      String result = "";
-      String s = sentence;
-      int skipper = 0;
-        for (int i = 0; i <s.length() ; i++) {
-            if(Character.isLetter(s.charAt(i))){
+        String result = "";
+        String s = sentence;
+        int skipper = 0;
+        for (int i = 0; i < s.length(); i++) {
+            if (Character.isLetter(s.charAt(i))) {
                 String temp = "";
-                while( s.charAt(i)!=' ' ){
+                while (s.charAt(i) != ' ') {
                     temp = temp + s.charAt(i);
-                    if(i==s.length()-1){
+                    if (i == s.length() - 1) {
                         break;
-                    }else{
+                    } else {
                         i++;
                     }
                 }
 
 
-                result =  result + fahadifyWord(temp);
-                if(i!=s.length()-1) {
+                result = result + fahadifyWord(temp);
+                if (i != s.length() - 1) {
                     i--;
                 }
-            }else{
+            } else {
                 result = result + s.charAt(i);
             }
         }
 
-      return result;
+        return result;
     }
 
 

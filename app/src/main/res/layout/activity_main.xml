@@ -1,46 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity"
-    android:orientation="vertical">
+    tools:context="me.kindeep.fahadstimulator.MainActivity"
+    android:orientation="vertical"
+    android:clickable="true"
+    android:id="@+id/root">
 
     <TextView
-        android:id="@+id/hello"
-        android:layout_height="0sp"
-        android:layout_width="0sp"
-        />
-    <!--android:layout_width="366dp"-->
-    <!--android:layout_height="295dp"-->
-    <!--android:text="Hello World!"-->
-    <!--app:layout_constraintBottom_toBottomOf="parent"-->
-    <!--app:layout_constraintLeft_toLeftOf="parent"-->
-    <!--app:layout_constraintRight_toRightOf="parent"-->
-    <!--app:layout_constraintTop_toTopOf="parent"-->
-    <!--app:layout_constraintVertical_bias="0.925" />-->
+        android:id="@+id/recognizedText"
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="27dp"
+        android:layout_marginBottom="8dp"
+        android:scrollbarAlwaysDrawHorizontalTrack="false"
+        android:scrollbars="vertical"
+        android:textAppearance="@style/TextAppearance.AppCompat.Title" />
 
-    <Button
-        android:id="@+id/button"
+    <ImageView
+        android:id="@+id/fahad_display"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:onClick="onSpeechButtonClicked"
-        android:text="hear"
-        android:layout_margin= "16sp"
-        android:theme="@style/AppTheme.GreenRipple"
-        android:backgroundTint="@color/defaulehear"
-        />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
 
-    <Button
-        android:id="@+id/speak"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:onClick="onSpeakButtonClicked"
-        android:text="speak"
-        android:layout_marginLeft="16sp"
-        android:layout_marginRight= "16sp"
 
-        />
-
-</LinearLayout>
+</android.support.constraint.ConstraintLayout>
