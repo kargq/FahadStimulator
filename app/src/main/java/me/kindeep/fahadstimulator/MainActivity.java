@@ -1,7 +1,13 @@
+/**
+ *
+ */
 package me.kindeep.fahadstimulator;
+
+import java.util.Random;
 
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.UtteranceProgressListener;
+import android.speech.tts.Voice;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -11,6 +17,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.bumptech.glide.Glide;
 import com.microsoft.cognitiveservices.speech.audio.AudioConfig;
 import com.microsoft.cognitiveservices.speech.ResultReason;
@@ -19,10 +26,18 @@ import com.microsoft.cognitiveservices.speech.SpeechRecognitionResult;
 import com.microsoft.cognitiveservices.speech.SpeechRecognizer;
 import com.microsoft.cognitiveservices.speech.CancellationDetails;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
+import java.util.Random;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+
+import me.kindeep.fahadstimulator.Fahad;
+import me.kindeep.fahadstimulator.MicrophoneStream;
+import me.kindeep.fahadstimulator.R;
 
 import static android.Manifest.permission.INTERNET;
 import static android.Manifest.permission.RECORD_AUDIO;
@@ -124,7 +139,23 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onInit(int status) {
                 if (status != TextToSpeech.ERROR) {
-                    t1.setLanguage(Locale.UK);
+                    //VOICE
+                    //EO VOICE
+                    List<Voice> voices = new ArrayList<>();
+                    for (Voice tmpVoice : t1.getVoices()) {
+                        voices.add(tmpVoice);
+                        if (tmpVoice.getName().contains("#male") && tmpVoice.getName().contains("en-us")) {
+                            Log.e("FAHADVOICE", "werid sht DID ON happend" + tmpVoice.getName());
+                            break;
+                        } else {
+                            Log.e("FAHADVOICE", "werid sht happend" + tmpVoice.getName());
+                        }
+                    }
+
+                    int rindex = randInt(0, voices.size() - 1);
+
+                    t1.setVoice(voices.get(rindex));
+
                     t1.setOnUtteranceProgressListener(new UtteranceProgressListener() {
                         @Override
                         public void onStart(String utteranceId) {
@@ -133,14 +164,16 @@ public class MainActivity extends AppCompatActivity {
 
                         @Override
                         public void onDone(String utteranceId) {
-                            new Thread() {
-                                public void run() {
-                                    MainActivity.this.runOnUiThread(() -> {
-                                        Log.e("TTS", "done");
-                                        setGifForImage(R.raw.just_fahad, fahadView);
-                                    });
-                                }
-                            }.start();
+
+                            Log.e("FAHADVOICE", "done");
+//                            new Thread() {
+//                                public void run() {
+                            MainActivity.this.runOnUiThread(() -> {
+                                Log.e("TTS", "done");
+                                setGifForImage(R.raw.just_fahad, fahadView);
+                            });
+//                                }
+//                            }.start();
 
                         }
 
@@ -152,10 +185,22 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
 
+        }, "com.google.android.tts");
+
+        t1.setOnUtteranceCompletedListener(new TextToSpeech.OnUtteranceCompletedListener() {
+            @Override
+            public void onUtteranceCompleted(String utteranceId) {
+                Log.e("FAHADVOICE", utteranceId + "COMPLETED");
+            }
         });
 
 
+    }
 
+    public static int randInt(int min, int max) {
+        Random rand = new Random();
+        int randomNum = rand.nextInt((max - min) + 1) + min;
+        return randomNum;
     }
 
     private void setGifForImage(int gifResId, ImageView imageView) {
@@ -169,7 +214,6 @@ public class MainActivity extends AppCompatActivity {
     public void speak() {
         try {
             if (recognized) {
-
                 String toSpeak = Fahad.fahadifySentence(resultText);
                 //Toast.makeText(getApplicationContext(), toSpeak, Toast.LENGTH_SHORT).show();
                 t1.speak(toSpeak, TextToSpeech.QUEUE_FLUSH, null);
