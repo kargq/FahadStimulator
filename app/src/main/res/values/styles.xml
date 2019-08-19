@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
@@ -6,10 +6,18 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:windowBackground">@color/bk</item>
+
     </style>
 
     <style name="AppTheme.GreenRipple">
         <item name="colorControlHighlight">#ff0000</item>
+    </style>
+
+    <style name="TextAppearance.AppCompat.Widget.ActionBar.Title" parent="TextAppearance.AppCompat.Widget.ActionBar.Menu">
+    <item name="android:textColor">@color/title_color</item>
+        <item name="android:fontFamily">sans-serif-thin</item>
+        <item name="android:textSize">20dp</item>
     </style>
 
 </resources>

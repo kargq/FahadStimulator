@@ -19,6 +19,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.microsoft.cognitiveservices.speech.audio.AudioConfig;
 import com.microsoft.cognitiveservices.speech.ResultReason;
 import com.microsoft.cognitiveservices.speech.SpeechConfig;
@@ -28,29 +29,30 @@ import com.microsoft.cognitiveservices.speech.CancellationDetails;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
-import java.util.Random;
-import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import me.kindeep.fahadstimulator.Fahad;
-import me.kindeep.fahadstimulator.MicrophoneStream;
-import me.kindeep.fahadstimulator.R;
 
 import static android.Manifest.permission.INTERNET;
 import static android.Manifest.permission.RECORD_AUDIO;
+import static android.view.View.VISIBLE;
 
 public class MainActivity extends AppCompatActivity {
+
+
+    //subscription key
+    private static String SpeechSubscriptionKey = "818b0c8310c942f5b2a4c20e769a3e74";
+
+    //service region
+    private static String SpeechRegion = "eastus2";
+
+
     TextToSpeech t1;
     TextView ed1;
     boolean recognized;
     SpeechRecognitionResult result;
-    //subscription key
-    private static String SpeechSubscriptionKey = "818b0c8310c942f5b2a4c20e769a3e74";
-    //service region
-    private static String SpeechRegion = "eastus2";
+
     private boolean paused = true;
     private Button playPause;
     private ImageView fahadView;
@@ -59,15 +61,6 @@ public class MainActivity extends AppCompatActivity {
     private ConstraintLayout root;
     private String resultText;
 
-    private MicrophoneStream createMicrophoneStream() {
-        if (microphoneStream != null) {
-            microphoneStream.close();
-            microphoneStream = null;
-        }
-
-        microphoneStream = new MicrophoneStream();
-        return microphoneStream;
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,13 +68,13 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         root = findViewById(R.id.root);
         fahadView = findViewById(R.id.fahad_display);
-        //fahadView.loadDataWithBaseURL(null, "<html><body><center><img style='align:center;max-width:100%;max-height:100% ; border-radius:50%' src='file:///android_asset/giphy.gif'/></center></body></html>", "text/html", "UTF-8", "");
-        //fahadView.setBackgroundColor(Color.TRANSPARENT);
 
+
+        //Setting the welcome gif "SALAM DARI"
         setGifForImage(R.raw.just_fahad, fahadView);
 
 
-        // Initialize SpeechSDK and request required permissions.
+        // Initialize SpeechSDK and request required permissions
         try {
             // a unique number within the application to allow
             // correlating permission request responses with the request.
@@ -93,7 +86,9 @@ public class MainActivity extends AppCompatActivity {
             Log.e("SpeechSDK", "could not init sdk, " + ex.toString());
         }
 
-        // create config
+
+
+        // create configuration of the speech to text service
         final SpeechConfig speechConfig;
         try {
             speechConfig = SpeechConfig.fromSubscription(SpeechSubscriptionKey, SpeechRegion);
@@ -102,20 +97,24 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        ///////////////////////////////////////////////////
-        // recognize
-        ///////////////////////////////////////////////////
+
+
+       /*
+       * creating essential tool for audio input, showing appropriate gifs
+       *
+       * */
         root.setOnClickListener(view -> {
             final String logTag = "reco 1";
 
-            startedListening();
+            startedListening();   // displaying gif with hearing fahad
 
             try {
-                // final AudioConfig audioInput = AudioConfig.fromDefaultMicrophoneInput();
                 final AudioConfig audioInput = AudioConfig.fromStreamInput(createMicrophoneStream());
                 final SpeechRecognizer reco = new SpeechRecognizer(speechConfig, audioInput);
 
                 final Future<SpeechRecognitionResult> task = reco.recognizeOnceAsync();
+
+
                 setOnTaskCompletedListener(task, result -> {
                     String s = result.getText();
                     if (result.getReason() != ResultReason.RecognizedSpeech) {
@@ -127,21 +126,43 @@ public class MainActivity extends AppCompatActivity {
 
                     reco.close();
                     Log.i(logTag, "Recognizer returned: " + s);
-                    stoppedListening();
+
+
+                    speak();
+
+                    do{
+                        stoppedListening();
+                        Thread.sleep(300);
+                    }while (t1.isSpeaking());
+
+                    Thread.sleep(500);
+
+                    waitForNextOne();
                 });
 
             } catch (Exception ex) {
                 System.out.println(ex.getMessage());
             }
+
         });
 
+
+
+
+        /*
+        * Text to speech tweaks(basically changing voices and stuff)
+        *
+        * */
         t1 = new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
             @Override
             public void onInit(int status) {
                 if (status != TextToSpeech.ERROR) {
-                    //VOICE
-                    //EO VOICE
+
+
+                    //Random accent and voice evertime
                     List<Voice> voices = new ArrayList<>();
+
+
                     for (Voice tmpVoice : t1.getVoices()) {
                         voices.add(tmpVoice);
                         if (tmpVoice.getName().contains("#male") && tmpVoice.getName().contains("en-us")) {
@@ -156,6 +177,8 @@ public class MainActivity extends AppCompatActivity {
 
                     t1.setVoice(voices.get(rindex));
 
+                    t1.setSpeechRate((float)1.0);
+                    //Actions
                     t1.setOnUtteranceProgressListener(new UtteranceProgressListener() {
                         @Override
                         public void onStart(String utteranceId) {
@@ -166,14 +189,6 @@ public class MainActivity extends AppCompatActivity {
                         public void onDone(String utteranceId) {
 
                             Log.e("FAHADVOICE", "done");
-//                            new Thread() {
-//                                public void run() {
-                            MainActivity.this.runOnUiThread(() -> {
-                                Log.e("TTS", "done");
-                                setGifForImage(R.raw.just_fahad, fahadView);
-                            });
-//                                }
-//                            }.start();
 
                         }
 
@@ -183,9 +198,15 @@ public class MainActivity extends AppCompatActivity {
                         }
                     });
                 }
+
+
             }
 
+
+
         }, "com.google.android.tts");
+
+
 
         t1.setOnUtteranceCompletedListener(new TextToSpeech.OnUtteranceCompletedListener() {
             @Override
@@ -197,20 +218,13 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public static int randInt(int min, int max) {
-        Random rand = new Random();
-        int randomNum = rand.nextInt((max - min) + 1) + min;
-        return randomNum;
+    private void doToast(String ajajajaj) {
+
+        Toast.makeText(this, ajajajaj, Toast.LENGTH_LONG).show();
     }
 
-    private void setGifForImage(int gifResId, ImageView imageView) {
-        /*from raw folder*/
-        Glide.with(this)
-                .load(gifResId)
-                .into(imageView);
 
-    }
-
+    //Does the job speaking after convertion of the text into fahadian
     public void speak() {
         try {
             if (recognized) {
@@ -219,19 +233,55 @@ public class MainActivity extends AppCompatActivity {
                 t1.speak(toSpeak, TextToSpeech.QUEUE_FLUSH, null);
 
             } else {
-                String toSpeak = "Cant hear bleep";
+                String toSpeak = "blah blah blah";
                 //Toast.makeText(getApplicationContext(), toSpeak, Toast.LENGTH_SHORT).show();
                 t1.speak(toSpeak, TextToSpeech.QUEUE_FLUSH, null);
             }
             recognized = false;
+
+
         } catch (Exception e) {
             String toSpeak = "Something's not right, maybe go at it again?";
             Log.e("Speaking Failed", e.getMessage().toString());
             Toast.makeText(getApplicationContext(), toSpeak, Toast.LENGTH_SHORT).show();
             t1.speak(toSpeak, TextToSpeech.QUEUE_FLUSH, null);
         }
+
+
     }
 
+
+    //controlling microphone stream
+    private MicrophoneStream createMicrophoneStream() {
+        if (microphoneStream != null) {
+            microphoneStream.close();
+            microphoneStream = null;
+        }
+
+        microphoneStream = new MicrophoneStream();
+        return microphoneStream;
+    }
+
+
+    //Random number generator
+    public static int randInt(int min, int max) {
+        Random rand = new Random();
+        int randomNum = rand.nextInt((max - min) + 1) + min;
+        return randomNum;
+    }
+
+
+    //Setting gif for image
+    private void setGifForImage(int gifResId, ImageView imageView) {
+        /*from raw folder*/
+        Glide.with(this)
+                .load(gifResId)
+                .into(imageView);
+
+    }
+
+
+    //To start listening while having a gif playing
     private void startedListening() {
         MainActivity.this.runOnUiThread(() -> {
             //change image
@@ -239,14 +289,56 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void stoppedListening() {
+
+
+    private void waitForNextOne() {
         MainActivity.this.runOnUiThread(() -> {
             //change image
-            setGifForImage(R.raw.talking_fahad, fahadView);
-            speak();
+            setGifForImage(R.raw.giphy_downsized, fahadView);
+            Toast.makeText(this, "Touch to do it again!",Toast.LENGTH_SHORT).show();
+
         });
     }
 
+
+    //To stop listening while having a gif playing
+    private void stoppedListening() {
+        MainActivity.this.runOnUiThread(() -> {
+            setGifForImage(R.raw.talking_fahad, fahadView);
+        });
+    }
+
+
+    //For back key exit function
+    private long backPressed;
+
+    @Override
+    public void onBackPressed() {
+
+        if(backPressed+1500>System.currentTimeMillis()){
+        super.onBackPressed();
+        return;
+        }else {
+            Toast.makeText(getBaseContext(),"Press again to exit", Toast.LENGTH_LONG).show();
+        }
+        backPressed=System.currentTimeMillis();
+    }
+
+
+    /*
+     * For having multiple threads
+     *
+     * */
+    private static ExecutorService s_executorService;
+
+    static {
+        s_executorService = Executors.newCachedThreadPool();
+    }
+
+
+    /*
+     * ????????????????
+     * */
     private <T> void setOnTaskCompletedListener(Future<T> task, OnTaskCompletedListener<T> listener) {
         s_executorService.submit(() -> {
             T result = task.get();
@@ -256,14 +348,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private interface OnTaskCompletedListener<T> {
-        void onCompleted(T taskResult);
+        void onCompleted(T taskResult) throws InterruptedException;
     }
 
-    private static ExecutorService s_executorService;
 
-    static {
-        s_executorService = Executors.newCachedThreadPool();
-    }
+    //logging the states while running
 
     static void loge(String[] what) {
         StringBuilder lol = new StringBuilder();
